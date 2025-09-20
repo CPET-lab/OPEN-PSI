@@ -1,25 +1,30 @@
 // sender.h
 
-#ifndef SENDER_H_ // 이 파일이 아직 포함되지 않았다면
-#define SENDER_H_ // 이제 포함되었다고 표시합니다.
+#ifndef SENDER_H_
+#define SENDER_H_ 
 
 # include "util.h"
 
 class Sender {
 public:
-    // 기본 생성자: Sender sender_object; 와 같이 호출됩니다.
     Sender();
     
-    // 4. 공개 멤버 함수 (메서드)
     /**
-     * @brief 원격 서버에 연결합니다.
-     * @param ip 연결할 서버의 IP 주소입니다.
-     * @param port 연결할 서버의 포트 번호입니다.
-     * @return 연결 성공 시 true, 실패 시 false를 반환합니다.
+     * @brief Constructor with parameters
+     * @param data set sender's vector
+     * @param encoder CoeffEncoder
+     * @param encryptor Encryptor
      */
-    
     explicit Sender(const std::vector<int64_t>& data, seal::CoeffEncoder & encoder, seal::Encryptor & encryptor);
 
+    /**
+     * @brief Get psi range (start, end)
+     * @param decryptor Decryptor
+     * @param encoder CoeffEncoder
+     * @param multiplied_ciphertext Ciphertext after multiplication
+     * @param threshold threshold value
+     * @return pair of (start, end)
+     */
     inline pair<int64_t, int64_t> get_psi_range(seal::Decryptor & decryptor, seal::CoeffEncoder & encoder, seal::Ciphertext & multiplied_ciphertext, int64_t threshold) const {
         // decrypt
         seal::Plaintext decrypted_plaintext;
@@ -34,18 +39,35 @@ public:
         return {start, end};
     }
 
+    /**
+     * @brief Get data at index
+     * @param index index of data
+     * @return data at index
+     */
     inline int64_t get_data(uint64_t &index) const {
         return data_[index];
     }
 
+    /**
+     * @brief Encode data to plaintext
+     * @param encoder CoeffEncoder
+     */
     inline void encode(seal::CoeffEncoder &encoder) {
         encoder.encode(data_, plaintext_);
     }
 
+    /**
+     * @brief Encrypt plaintext to ciphertext
+     * @param encryptor Encryptor
+     */
     inline void encrypt(seal::Encryptor &encryptor) {
         encryptor.encrypt(plaintext_, ciphertext_);
     }
 
+    /**
+     * @brief Get ciphertext
+     * @return ciphertext
+     */
     inline seal::Ciphertext get_ciphertext() const {
         return ciphertext_;
     }
@@ -61,6 +83,6 @@ private:
     seal::Plaintext plaintext_;
     seal::Ciphertext ciphertext_; 
 
-}; // 클래스 선언 끝에는 반드시 세미콜론(;)을 붙여야 합니다.
+};
 
-#endif /* SENDER_H_ */ // 헤더 가드의 끝
+#endif

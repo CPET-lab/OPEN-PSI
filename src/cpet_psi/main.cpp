@@ -43,10 +43,6 @@ int main(){
 
     int64_t threshold = 200;
     cout << "Threshold: " << threshold << endl;
-    
-    // #1. Sender vector 생성
-    // 1. vector<int64_t> sender_vector : a1 + a2·x + a3·x^2 + a4·x^3.. + ai·x^i (i 는 벡터 크기 - 1, 즉 마지막 항) 로 인코딩할 벡터
-
 
     vector<int64_t> sender_vector;
     uint64_t set_vector_size = poly_modulus_degree;
@@ -99,11 +95,10 @@ int main(){
 
     // #6. Sender -> Receiver 암호문 전송
     // #7. sender 와 receiver 의 암호문 - 평문 곱셈
-    Ciphertext multiplied_ciphertext = receiver.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext);
+    Ciphertext multiplied_ciphertext;
+    receiver.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext, multiplied_ciphertext);
     print_noise_budget(decryptor, multiplied_ciphertext, "multiplied_ciphertext(before relin)");
     
-
-
     int64_t receiver_distance = receiver.get_integer_psi_value();
     receiver_distance = centered_modulus(receiver_distance, context_param.plain_modulus().value());
 

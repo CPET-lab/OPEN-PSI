@@ -9,24 +9,36 @@ class Receiver {
 public:
     Receiver();
     
-    // 4. 공개 멤버 함수 (메서드)
     /**
-     * @brief 원격 서버에 연결합니다.
-     * @param ip 연결할 서버의 IP 주소입니다.
-     * @param port 연결할 서버의 포트 번호입니다.
-     * @return 연결 성공 시 true, 실패 시 false를 반환합니다.
+     * @brief Constructor with parameters
+     * @param data set receiver's vector
+     * @param context SEALContext
+     * @param encoder CoeffEncoder
      */
 
     explicit Receiver(const std::vector<int64_t>& data, seal::SEALContext & context, seal::CoeffEncoder & encoder);
 
+    /**
+     * @brief Get integer psi value 
+     * @return (-b^2 + R)
+     */
     inline int64_t get_integer_psi_value() const {
         return -l_p_distance_ + random_vector_[data_size_ - 1];
     }
    
+    /**
+     * @brief Get data at index
+     * @param index index of data
+     * @return data at index
+     */
     inline int64_t get_data(uint64_t &index) const {
         return data_[index];
     }
    
+    /**
+     * @brief Encode data to plaintext
+     * @param encoder CoeffEncoder
+     */
     inline void encode(seal::CoeffEncoder &encoder) {
         
         vector<int64_t> temp_data = data_;
@@ -41,11 +53,15 @@ public:
         encoder.encode(temp_data, plaintext_);
     }
 
-    inline seal::Ciphertext multiply_plain_with_ciphertext_and_add_random_vector(seal::Evaluator &evaluator, const seal::Ciphertext &sender_ciphertext) {
-        seal::Ciphertext result;
-        evaluator.multiply_plain(sender_ciphertext, plaintext_, result);
-        evaluator.add_plain_inplace(result, random_plaintext_);
-        return result;
+    /**
+     * @brief Multiply plaintext with ciphertext and add random vector
+     * @param evaluator Evaluator
+     * @param sender_ciphertext Ciphertext from sender
+     * @param destination Result ciphertext
+     */
+    inline void multiply_plain_with_ciphertext_and_add_random_vector(seal::Evaluator &evaluator, const seal::Ciphertext &sender_ciphertext, seal::Ciphertext &destination) {
+        evaluator.multiply_plain(sender_ciphertext, plaintext_, destination);
+        evaluator.add_plain_inplace(destination, random_plaintext_);
     }
 
     // destructor
@@ -60,6 +76,6 @@ private:
     seal::Ciphertext ciphertext_; 
     vector<int64_t> random_vector_;
     seal::Plaintext random_plaintext_;
-}; // 클래스 선언 끝에는 반드시 세미콜론(;)을 붙여야 합니다.
+}; 
 
-#endif /* RECEIVER_H_ */ // 헤더 가드의 끝
+#endif 
