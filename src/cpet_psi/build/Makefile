@@ -129,6 +129,54 @@ test_file/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/build
 .PHONY : test_file/fast
 
+DASetAug.o: DASetAug.cpp.o
+.PHONY : DASetAug.o
+
+# target to build an object file
+DASetAug.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/DASetAug.cpp.o
+.PHONY : DASetAug.cpp.o
+
+DASetAug.i: DASetAug.cpp.i
+.PHONY : DASetAug.i
+
+# target to preprocess a source file
+DASetAug.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/DASetAug.cpp.i
+.PHONY : DASetAug.cpp.i
+
+DASetAug.s: DASetAug.cpp.s
+.PHONY : DASetAug.s
+
+# target to generate assembly for a file
+DASetAug.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/DASetAug.cpp.s
+.PHONY : DASetAug.cpp.s
+
+fpsi.o: fpsi.cpp.o
+.PHONY : fpsi.o
+
+# target to build an object file
+fpsi.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/fpsi.cpp.o
+.PHONY : fpsi.cpp.o
+
+fpsi.i: fpsi.cpp.i
+.PHONY : fpsi.i
+
+# target to preprocess a source file
+fpsi.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/fpsi.cpp.i
+.PHONY : fpsi.cpp.i
+
+fpsi.s: fpsi.cpp.s
+.PHONY : fpsi.s
+
+# target to generate assembly for a file
+fpsi.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/test_file.dir/build.make CMakeFiles/test_file.dir/fpsi.cpp.s
+.PHONY : fpsi.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -210,6 +258,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_file"
+	@echo "... DASetAug.o"
+	@echo "... DASetAug.i"
+	@echo "... DASetAug.s"
+	@echo "... fpsi.o"
+	@echo "... fpsi.i"
+	@echo "... fpsi.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

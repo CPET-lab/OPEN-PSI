@@ -13,7 +13,13 @@ Sender::Sender()
       data_size_(0),
       l_p_distance_(0) {}
 
-Sender::Sender(const std::vector<int64_t>& data, seal::CoeffEncoder & encoder, seal::Encryptor & encryptor) : data_(data) {
+/**
+ * @brief Constructor with parameters
+ * @param data set sender's vector
+ * @param encoder CoeffEncoder
+ * @param encryptor Encryptor
+ */
+Sender::Sender(const std::vector<int64_t>& data, int64_t modulus, seal::CoeffEncoder & encoder, seal::Encryptor & encryptor) : data_(data), modulus_(modulus) {
     data_ = data;
     data_size_ = data.size();
     l_p_distance_ = 0;

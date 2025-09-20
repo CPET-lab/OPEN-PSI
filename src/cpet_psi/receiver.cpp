@@ -14,7 +14,13 @@ Receiver::Receiver()
       data_size_(0),
       l_p_distance_(0) {}
 
-Receiver::Receiver(const std::vector<int64_t>& data, seal::SEALContext & context, seal::CoeffEncoder & encoder) : data_(data) {
+
+/** * @brief Constructor with parameters
+ * @param data set receiver's vector
+ * @param context SEALContext
+ * @param encoder CoeffEncoder
+ */
+Receiver::Receiver(const std::vector<int64_t>& data, int64_t modulus, seal::CoeffEncoder & encoder) : data_(data), modulus_(modulus) {
     data_ = data;
     data_size_ = data.size();
     l_p_distance_ = 0;
@@ -23,8 +29,9 @@ Receiver::Receiver(const std::vector<int64_t>& data, seal::SEALContext & context
         l_p_distance_ += val * val;
     }
 
+    // generate random vector, and encode it to random_plaintext_
     for (size_t i = 0; i < data_size_; i++) {
-        int64_t random_value = random_Zp(context.first_context_data()->parms().plain_modulus().value());
+        int64_t random_value = random_Zp(modulus_);
         random_vector_.push_back(random_value);
     }
     this->encode(encoder);

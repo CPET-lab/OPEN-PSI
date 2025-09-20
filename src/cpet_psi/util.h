@@ -36,7 +36,6 @@ inline uint64_t rand_u64()
 inline uint64_t random_Zp(uint64_t p)
 {
     // (-p/2, p/2) 범위를 출력하도록 변경
-    
     return (rand_u64() % p) - (p / 2);
 }
 
@@ -49,6 +48,7 @@ inline int64_t centered_modulus(int64_t value, int64_t modulus) {
     }
     return mod_value;
 }
+
 inline void centered_vector(const std::vector<uint64_t>& vec, int64_t modulus) {
     if (vec.empty()) {
         throw std::invalid_argument("Vector is empty");

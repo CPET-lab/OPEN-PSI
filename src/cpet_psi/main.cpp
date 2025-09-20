@@ -1,5 +1,6 @@
 #include "sender.h"
 #include "receiver.h"
+#include "fpsi.h"
 
 using namespace std;
 using namespace seal;
@@ -53,7 +54,7 @@ int main(){
         sender_vector.push_back(random_value);
     }
 
-    Sender sender(sender_vector, encoder, encryptor);
+    Sender sender(sender_vector, context_param.plain_modulus().value(), encoder, encryptor);
 
     cout << "Sender vector: " << endl;
     
@@ -81,7 +82,7 @@ int main(){
 
     cout << "Receiver vector: " << endl;
 
-    Receiver receiver(receiver_vector, context, encoder);
+    Receiver receiver(receiver_vector, context_param.plain_modulus().value(), encoder);
     for (size_t i = 0; i < 10; i++) {
         cout << receiver.get_data(i) << " ";
     }
@@ -99,18 +100,16 @@ int main(){
     receiver.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext, multiplied_ciphertext);
     print_noise_budget(decryptor, multiplied_ciphertext, "multiplied_ciphertext(before relin)");
     
-    int64_t receiver_distance = receiver.get_integer_psi_value();
-    receiver_distance = centered_modulus(receiver_distance, context_param.plain_modulus().value());
+    int64_t receiver_distance = receiver.get_psi_value();
 
+    // (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
     pair<int64_t, int64_t> sender_range = sender.get_psi_range(decryptor, encoder, multiplied_ciphertext, threshold);
-    int64_t start = centered_modulus(sender_range.first, context_param.plain_modulus().value());
-    int64_t end = centered_modulus(sender_range.second, context_param.plain_modulus().value());
 
-    // 이후 (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1) 범위를 계산
-    // cout << "a²-2ab + R : " << result << endl;
-    cout << "(a²-2ab + R - d², a²-2ab + R + 1) : " << start << ", " << end << endl;
-    // #11. Receiver 는 -b^2 + R 을 가지고 있음.
-    cout << "-b² + R : " << receiver_distance << endl;
+    // psi 객체 생성
+    FuzzyPSI fpsi(sender_range, receiver_distance, threshold, context_param.plain_modulus().value());
+
+    fpsi.print_info();
+    fpsi.fuzzy_fast_one_to_one_matching();
 
     // 시간 측정 종료 및 결과 출력
     end_time = chrono::high_resolution_clock::now();

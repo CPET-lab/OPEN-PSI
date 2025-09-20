@@ -16,14 +16,15 @@ public:
      * @param encoder CoeffEncoder
      */
 
-    explicit Receiver(const std::vector<int64_t>& data, seal::SEALContext & context, seal::CoeffEncoder & encoder);
+    explicit Receiver(const std::vector<int64_t>& data, int64_t modulus, seal::CoeffEncoder & encoder);
 
     /**
      * @brief Get integer psi value 
-     * @return (-b^2 + R)
+     * @return (-b^2 + R) mod t
      */
-    inline int64_t get_integer_psi_value() const {
-        return -l_p_distance_ + random_vector_[data_size_ - 1];
+    inline int64_t get_psi_value() const {
+        int64_t result = -l_p_distance_ + random_vector_[data_size_ - 1];
+        return centered_modulus(result, modulus_);
     }
    
     /**
@@ -62,6 +63,8 @@ public:
     inline void multiply_plain_with_ciphertext_and_add_random_vector(seal::Evaluator &evaluator, const seal::Ciphertext &sender_ciphertext, seal::Ciphertext &destination) {
         evaluator.multiply_plain(sender_ciphertext, plaintext_, destination);
         evaluator.add_plain_inplace(destination, random_plaintext_);
+
+        // [TODO] : noise flooding 추가 해야함
     }
 
     // destructor
@@ -72,6 +75,7 @@ private:
     vector<int64_t> data_;
     uint64_t data_size_;
     int64_t l_p_distance_;
+    int64_t modulus_;
     seal::Plaintext plaintext_;
     seal::Ciphertext ciphertext_; 
     vector<int64_t> random_vector_;

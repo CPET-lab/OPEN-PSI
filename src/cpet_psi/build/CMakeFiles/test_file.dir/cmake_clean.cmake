@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/test_file.dir/DASetAug.cpp.o"
+  "CMakeFiles/test_file.dir/DASetAug.cpp.o.d"
+  "CMakeFiles/test_file.dir/fpsi.cpp.o"
+  "CMakeFiles/test_file.dir/fpsi.cpp.o.d"
   "CMakeFiles/test_file.dir/main.cpp.o"
   "CMakeFiles/test_file.dir/main.cpp.o.d"
   "CMakeFiles/test_file.dir/receiver.cpp.o"

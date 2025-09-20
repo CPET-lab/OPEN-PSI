@@ -15,7 +15,7 @@ public:
      * @param encoder CoeffEncoder
      * @param encryptor Encryptor
      */
-    explicit Sender(const std::vector<int64_t>& data, seal::CoeffEncoder & encoder, seal::Encryptor & encryptor);
+    explicit Sender(const std::vector<int64_t>& data, int64_t modulus, seal::CoeffEncoder & encoder, seal::Encryptor & encryptor);
 
     /**
      * @brief Get psi range (start, end)
@@ -35,7 +35,9 @@ public:
         encoder.decode(decrypted_plaintext, decoded_result);
 
         int64_t start = l_p_distance_ + decoded_result[data_size_ - 1] - threshold*threshold;
+        start = centered_modulus(start, modulus_);
         int64_t end = l_p_distance_ + decoded_result[data_size_ - 1] + 1;
+        end = centered_modulus(end, modulus_);
         return {start, end};
     }
 
@@ -82,7 +84,7 @@ private:
     int64_t l_p_distance_;
     seal::Plaintext plaintext_;
     seal::Ciphertext ciphertext_; 
-
+    int64_t modulus_;
 };
 
 #endif
