@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // 1단계: CMake configure
+      "label": "configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "-S", ".",
+        "-B", "build",
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DCMAKE_PREFIX_PATH=${workspaceFolder}/build"
+      ],
+      "options": { "cwd": "${workspaceFolder}/src/cpet_psi" }
+    },
+    {
+      // 2단계: CMake build (Debug)
+      "label": "build",
+      "dependsOn": "configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": [
+        "--build", "build"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": { "cwd": "${workspaceFolder}/src/cpet_psi" }
+    },
+    {
+      // 3단계: Run test_file
+      "label": "run",
+      "type": "shell",
+      "command": "./build/bin/test_file",
+      "options": { "cwd": "${workspaceFolder}/src/cpet_psi" }
+    }
+  ]
+}

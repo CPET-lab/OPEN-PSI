@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_file.dir/fpsi.cpp.o -o bin/test_file  /home/mintim01/PSI/src/externals/MS-SEAL/build/lib/libseal-4.1.a 

@@ -1,3 +1,6 @@
 [submodule "src/externals/Miracl"]
 	path = src/externals/Miracl
 	url = git://github.com/CertiVox/Miracl.git
+[submodule "src/externals/MS-SEAL"]
+	path = src/externals/MS-SEAL
+	url = https://github.com/mmig01/MS-SEAL.git
