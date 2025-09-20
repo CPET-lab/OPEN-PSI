@@ -1,5 +1,7 @@
-CMakeFiles/test_file.dir/fpsi.cpp.o: \
- /home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.cpp /usr/include/stdc-predef.h \
+CMakeFiles/test_file.dir/receiver.cpp.o: \
+ /home/mintim01/OPEN-PSI/src/cpet_psi/receiver.cpp \
+ /usr/include/stdc-predef.h \
+ /home/mintim01/OPEN-PSI/src/cpet_psi/receiver.h \
  /home/mintim01/OPEN-PSI/src/cpet_psi/util.h \
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src/seal/seal.h \
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src/seal/batchencoder.h \

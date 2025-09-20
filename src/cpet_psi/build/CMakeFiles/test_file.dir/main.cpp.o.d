@@ -1,5 +1,6 @@
-CMakeFiles/test_file.dir/fpsi.cpp.o: \
- /home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.cpp /usr/include/stdc-predef.h \
+CMakeFiles/test_file.dir/main.cpp.o: \
+ /home/mintim01/OPEN-PSI/src/cpet_psi/main.cpp /usr/include/stdc-predef.h \
+ /home/mintim01/OPEN-PSI/src/cpet_psi/sender.h \
  /home/mintim01/OPEN-PSI/src/cpet_psi/util.h \
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src/seal/seal.h \
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src/seal/batchencoder.h \
@@ -409,4 +410,5 @@ CMakeFiles/test_file.dir/fpsi.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/13/bits/messages_members.h \
  /usr/include/libintl.h /usr/include/c++/13/bits/locale_facets_nonio.tcc \
  /usr/include/c++/13/bits/locale_conv.h \
- /usr/include/c++/13/bits/quoted_string.h
+ /usr/include/c++/13/bits/quoted_string.h \
+ /home/mintim01/OPEN-PSI/src/cpet_psi/receiver.h

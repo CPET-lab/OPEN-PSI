@@ -22,7 +22,9 @@ if(SEAL_BUILD_EXAMPLES)
 
     target_sources(test_file
         PRIVATE
-            ${CMAKE_CURRENT_LIST_DIR}/fpsi.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/main.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/sender.cpp
+            ${CMAKE_CURRENT_LIST_DIR}/receiver.cpp
     )
 
     if(TARGET SEAL::seal)

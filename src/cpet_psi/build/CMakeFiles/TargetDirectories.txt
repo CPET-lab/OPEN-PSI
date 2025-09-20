@@ -1,3 +1,3 @@
-/home/mintim01/PSI/src/cpet_psi/build/CMakeFiles/test_file.dir
-/home/mintim01/PSI/src/cpet_psi/build/CMakeFiles/edit_cache.dir
-/home/mintim01/PSI/src/cpet_psi/build/CMakeFiles/rebuild_cache.dir
+/home/mintim01/OPEN-PSI/src/cpet_psi/build/CMakeFiles/test_file.dir
+/home/mintim01/OPEN-PSI/src/cpet_psi/build/CMakeFiles/edit_cache.dir
+/home/mintim01/OPEN-PSI/src/cpet_psi/build/CMakeFiles/rebuild_cache.dir

@@ -1,4 +1,5 @@
-#include "util.h"
+#include "sender.h"
+#include "receiver.h"
 
 using namespace std;
 using namespace seal;
@@ -44,52 +45,38 @@ int main(){
     cout << "Threshold: " << threshold << endl;
     
     // #1. Sender vector 생성
-    // 총 두 개의 벡터를 생성
     // 1. vector<int64_t> sender_vector : a1 + a2·x + a3·x^2 + a4·x^3.. + ai·x^i (i 는 벡터 크기 - 1, 즉 마지막 항) 로 인코딩할 벡터
-    // 2. vector<int64_t> sender_vector_square : 0 + 0·x + 0·x^2 + 0·x^3.. + (a1^2 + a2^2 + a3^2 + ... + ai^2)·x^i (i 는 벡터 크기 - 1, 즉 마지막 항) 로 인코딩할 벡터
+
 
     vector<int64_t> sender_vector;
     uint64_t set_vector_size = poly_modulus_degree;
-    
-    
+
     for (size_t i = 0; i < set_vector_size; i++) {
         int64_t random_value = 0;
         random_value = 1;
         sender_vector.push_back(random_value);
     }
 
-    // Sender 는 본인 벡터의 Euclidean distance^2 를 계산
-    int64_t sender_distance = 0;
-    for (size_t i = 0; i < set_vector_size; i++) {
-        sender_distance += sender_vector[i] * sender_vector[i] % context_param.plain_modulus().value();
-    }
-    sender_distance = centered_modulus(sender_distance, context_param.plain_modulus().value());
+    Sender sender(sender_vector, encoder, encryptor);
 
     cout << "Sender vector: " << endl;
     
     for (size_t i = 0; i < 10; i++) {
-        cout << sender_vector[i] << " ";
+        cout << sender.get_data(i) << " ";
     }
     cout << endl;
 
     // #2. Sender vector encoding
     // ex) a1 + a2·x + a3·x^2 + a4·x^3 + a5·x^4 ...
-    // sender vector = { a11, a12, a13, a14, a15 };
+    // sender vector = { a11, a12, a13, a14, a15.. };
 
-    Plaintext sender_plaintext;
-
-    encoder.encode(sender_vector, sender_plaintext);
-
-    // #3. Sender vector encrypt
-    Ciphertext sender_ciphertext;
-    encryptor.encrypt(sender_plaintext, sender_ciphertext);
-
+    
+    Ciphertext sender_ciphertext = sender.get_ciphertext();
     print_noise_budget(decryptor, sender_ciphertext, "sender_ciphertext");
 
     //#4. Receiver vector 생성 후, 순서 반전
     // 마찬가지로 receiver vector 생성
     vector<int64_t> receiver_vector;
-    
     for (size_t i = 0; i < set_vector_size; i++) {
         int64_t random_value = 0;
         random_value = 2;
@@ -98,34 +85,11 @@ int main(){
 
     cout << "Receiver vector: " << endl;
 
+    Receiver receiver(receiver_vector, context, encoder);
     for (size_t i = 0; i < 10; i++) {
-        cout << receiver_vector[i] << " ";
+        cout << receiver.get_data(i) << " ";
     }
     cout << endl;
-
-    // Receiver 는 본인 벡터의 Euclidean distance^2 를 계산
-    int64_t receiver_distance = 0;
-    for (size_t i = 0; i < set_vector_size; i++) {
-        receiver_distance += receiver_vector[i] * receiver_vector[i] % context_param.plain_modulus().value();
-    }
-    receiver_distance = centered_modulus(receiver_distance, context_param.plain_modulus().value());
-
-    // 순서 반전
-    for (size_t i = 0; i < set_vector_size / 2; i++) {
-        swap(receiver_vector[i], receiver_vector[set_vector_size - 1 - i]);
-    }
-
-    // reveiver vector 원소에 -2 곱하기
-
-    for (size_t i = 0; i < set_vector_size; i++) {
-        receiver_vector[i] *= -2;
-    }
-
-    
-    // #5. Receiver vector encoding
-    Plaintext receiver_plaintext;
-
-    encoder.encode(receiver_vector, receiver_plaintext);
 
     // 여기서부터 시간 측정
     // 시간 측정 변수 선언
@@ -134,55 +98,18 @@ int main(){
     start_time = chrono::high_resolution_clock::now();
 
     // #6. Sender -> Receiver 암호문 전송
-
-    Ciphertext sender_to_receiver_ciphertext;
-    sender_to_receiver_ciphertext = sender_ciphertext;
-
     // #7. sender 와 receiver 의 암호문 - 평문 곱셈
-    Ciphertext multiplied_ciphertext;
-
-    evaluator.multiply_plain(sender_to_receiver_ciphertext, receiver_plaintext, multiplied_ciphertext);
+    Ciphertext multiplied_ciphertext = receiver.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext);
     print_noise_budget(decryptor, multiplied_ciphertext, "multiplied_ciphertext(before relin)");
-
-    // # 7-1 receiver 는 random value R <- Zt 로 이루어진 random 벡터 생성
-    // 일단 모두 같은 R 을 사용 하지만, 추후 수정 해야 함.
-    vector<int64_t> receiver_random_vector;
-    for (size_t i = 0; i < set_vector_size; i++) {
-        int64_t random_value = random_Zp(context_param.plain_modulus().value());
-        receiver_random_vector.push_back(random_value);
-    }
     
-    // random 벡터의 마지막 값을 R 로 사용
-    int64_t R = receiver_random_vector[set_vector_size - 1];
 
-    // # 7-2 receiver 는 R 벡터를 인코딩
-    Plaintext receiver_random_plaintext;
-    encoder.encode(receiver_random_vector, receiver_random_plaintext);
 
-    // #7-3 receiver 는 R 벡터를 기존 암호문에 덧셈
-
-    // sender 의 암호문에 R 벡터를 덧셈
-    evaluator.add_plain_inplace(multiplied_ciphertext, receiver_random_plaintext);
-
-    // Receiver 는 -receiver_distance + R 을 계산
-    receiver_distance = -receiver_distance + R;
+    int64_t receiver_distance = receiver.get_integer_psi_value();
     receiver_distance = centered_modulus(receiver_distance, context_param.plain_modulus().value());
 
-    // #8. decrypt
-    Plaintext decrypted_plaintext;
-    decryptor.decrypt(multiplied_ciphertext, decrypted_plaintext);
-
-    // #9. decode
-    vector<int64_t> decoded_result;
-    encoder.decode(decrypted_plaintext, decoded_result);
-
-
-    // #10. sender -> -2ab + R 을 받게 됨.
-    // 먼저 result = a^2 - 2ab + R 계산
-    int64_t result = sender_distance + decoded_result[set_vector_size - 1];
-    result = centered_modulus(result, context_param.plain_modulus().value());
-    int64_t start = centered_modulus(result - threshold*threshold, context_param.plain_modulus().value());
-    int64_t end = centered_modulus(result + 1, context_param.plain_modulus().value());
+    pair<int64_t, int64_t> sender_range = sender.get_psi_range(decryptor, encoder, multiplied_ciphertext, threshold);
+    int64_t start = centered_modulus(sender_range.first, context_param.plain_modulus().value());
+    int64_t end = centered_modulus(sender_range.second, context_param.plain_modulus().value());
 
     // 이후 (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1) 범위를 계산
     // cout << "a²-2ab + R : " << result << endl;
