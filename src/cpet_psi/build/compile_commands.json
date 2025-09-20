@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/mintim01/PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/fpsi.cpp.o -c /home/mintim01/PSI/src/cpet_psi/fpsi.cpp",
+  "file": "/home/mintim01/PSI/src/cpet_psi/fpsi.cpp",
+  "output": "CMakeFiles/test_file.dir/fpsi.cpp.o"
+}
+]
