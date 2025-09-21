@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -isystem /home/mintim01/PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include
+CXX_INCLUDES = -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include
 
 CXX_FLAGS = -O3 -DNDEBUG
 

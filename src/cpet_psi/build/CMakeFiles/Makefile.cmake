@@ -7,12 +7,12 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/home/mintim01/PSI/src/cpet_psi/CMakeLists.txt"
+  "/home/mintim01/OPEN-PSI/src/cpet_psi/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
-  "/home/mintim01/PSI/src/externals/MS-SEAL/build/cmake/SEALConfig.cmake"
-  "/home/mintim01/PSI/src/externals/MS-SEAL/build/cmake/SEALConfigVersion.cmake"
-  "/home/mintim01/PSI/src/externals/MS-SEAL/build/cmake/SEALTargets.cmake"
+  "/home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/cmake/SEALConfig.cmake"
+  "/home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/cmake/SEALConfigVersion.cmake"
+  "/home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/cmake/SEALTargets.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake"

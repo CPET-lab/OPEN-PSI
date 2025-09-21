@@ -1,8 +1,32 @@
 [
 {
-  "directory": "/home/mintim01/PSI/src/cpet_psi/build",
-  "command": "/usr/bin/c++  -isystem /home/mintim01/PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/fpsi.cpp.o -c /home/mintim01/PSI/src/cpet_psi/fpsi.cpp",
-  "file": "/home/mintim01/PSI/src/cpet_psi/fpsi.cpp",
+  "directory": "/home/mintim01/OPEN-PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/main.cpp.o -c /home/mintim01/OPEN-PSI/src/cpet_psi/main.cpp",
+  "file": "/home/mintim01/OPEN-PSI/src/cpet_psi/main.cpp",
+  "output": "CMakeFiles/test_file.dir/main.cpp.o"
+},
+{
+  "directory": "/home/mintim01/OPEN-PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/sender.cpp.o -c /home/mintim01/OPEN-PSI/src/cpet_psi/sender.cpp",
+  "file": "/home/mintim01/OPEN-PSI/src/cpet_psi/sender.cpp",
+  "output": "CMakeFiles/test_file.dir/sender.cpp.o"
+},
+{
+  "directory": "/home/mintim01/OPEN-PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/receiver.cpp.o -c /home/mintim01/OPEN-PSI/src/cpet_psi/receiver.cpp",
+  "file": "/home/mintim01/OPEN-PSI/src/cpet_psi/receiver.cpp",
+  "output": "CMakeFiles/test_file.dir/receiver.cpp.o"
+},
+{
+  "directory": "/home/mintim01/OPEN-PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/fpsi.cpp.o -c /home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.cpp",
+  "file": "/home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.cpp",
   "output": "CMakeFiles/test_file.dir/fpsi.cpp.o"
+},
+{
+  "directory": "/home/mintim01/OPEN-PSI/src/cpet_psi/build",
+  "command": "/usr/bin/c++  -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src -isystem /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include -O3 -DNDEBUG -o CMakeFiles/test_file.dir/DASetAug.cpp.o -c /home/mintim01/OPEN-PSI/src/cpet_psi/DASetAug.cpp",
+  "file": "/home/mintim01/OPEN-PSI/src/cpet_psi/DASetAug.cpp",
+  "output": "CMakeFiles/test_file.dir/DASetAug.cpp.o"
 }
 ]

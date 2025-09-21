@@ -20,6 +20,43 @@
 #include <random>
 #include <cstdint>
 
+// seed 생성기
+static std::random_device rd;
+// 난수발생기
+static std::mt19937_64 gen(rd());
+
+// 64비트 범위의 난수 생성 함수
+inline uint64_t rand_u64()
+{
+    return gen();
+}
+
+
+// 추가: 64비트 범위 랜덤 유틸
+inline uint64_t random_Zp(uint64_t p)
+{
+    // (-p/2, p/2) 범위를 출력하도록 변경
+    return (rand_u64() % p) - (p / 2);
+}
+
+inline int64_t centered_modulus(int64_t value, int64_t modulus) {
+    int64_t mod_value = value % modulus;
+    if (mod_value > modulus / 2) {
+        mod_value -= modulus;
+    } else if (mod_value < -modulus / 2) {
+        mod_value += modulus;
+    }
+    return mod_value;
+}
+
+inline void centered_vector(const std::vector<uint64_t>& vec, int64_t modulus) {
+    if (vec.empty()) {
+        throw std::invalid_argument("Vector is empty");
+    }
+    for (const auto& val : vec) {
+        centered_modulus(val, modulus);
+    }
+}
 // 아래는 seal example 편의성 코드
 
 /*
@@ -221,44 +258,3 @@ inline void print_noise_budget(seal::Decryptor &decryptor, seal::Ciphertext &cip
     std::cout << "    + noise budget in " << name << ": " << decryptor.invariant_noise_budget(ciphertext) << " bits"
          << std::endl;
 }
-
-inline void print_cipher_rns_coeff(
-    const seal::Ciphertext& in, const seal::SEALContext& context, const seal::Evaluator &evaluator)
-{
-    auto context_data_ptr = context.get_context_data(in.parms_id());
-    const auto& coeff_modulus = context_data_ptr->parms().coeff_modulus();
-    size_t coeff_modulus_size = coeff_modulus.size();
-
-    seal::Ciphertext in_copy = in;
-
-    if (in_copy.is_ntt_form())
-    {
-        evaluator.transform_from_ntt_inplace(in_copy);
-    }
-
-    const seal::Ciphertext::ct_coeff_type* ptr = in_copy.data();
-    auto size = in_copy.size();
-
-    std::cout << "/" << std::endl;
-    std::cout << "| Ciphertext RNS coeff :" << std::endl;
-    for (size_t i = 0; i < size; i++)
-    {
-        std::cout << "c_" << i << std::endl;
-        for (size_t j = 0; j < coeff_modulus_size; j++)
-        {
-            uint64_t modulus = coeff_modulus[j].value();
-            auto poly_modulus_degree = in_copy.poly_modulus_degree();
-            for (; poly_modulus_degree--; ptr++)
-            {
-                if (poly_modulus_degree < 3)
-                //if (j == 0)
-                {
-                    std::cout << *ptr << ' ';
-                }
-            }
-            std::cout << "mod " << modulus << std::endl;
-        }
-    }
-    std::cout << "\\" << std::endl;
-}
-

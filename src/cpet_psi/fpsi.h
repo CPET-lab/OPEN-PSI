@@ -1,260 +1,81 @@
-#pragma once
+#ifndef FPSI_H_
+#define FPSI_H_
 
-#include "seal/seal.h"
-#include <algorithm>
-#include <chrono>
-#include <cstddef>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <mutex>
-#include <numeric>
-#include <random>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
+# include "util.h"
+# include "DASetAug.h"
+# include "sender.h"
+# include "receiver.h"
 
-#include <random>
-#include <cstdint>
+class FuzzyPSI {
+public:
+    FuzzyPSI();
 
-// seed 생성기
-static std::random_device rd;
-// 난수발생기
-static std::mt19937_64 gen(rd());
+    /**
+     * @brief Constructor with parameters
+     * @param sender_range sender's psi range (start, end)
+     * @param receiver_value receiver's integer psi value
+     * @param threshold threshold value
+     * @param modulus modulus value
+     */
 
-// 64비트 범위의 난수 생성 함수
-inline uint64_t rand_u64()
-{
-    return gen();
-}
+    explicit FuzzyPSI(Sender & sender, Receiver & receiver, int64_t threshold, int64_t modulus, uint64_t slot_count);
 
+    /**
+     * @brief Print info (for DEBUG)
+     */
+    inline void print_info() const {
+        cout << "Sender range: (" << sender_range_.first << ", " << sender_range_.second << ")" << endl;
+        cout << "Receiver value: " << receiver_value_ << endl;
+        cout << "Threshold: " << threshold_ << endl;
+        cout << "Modulus: " << modulus_ << endl;
+    }
 
-// 추가: 64비트 범위 랜덤 유틸
-inline uint64_t random_Zp(uint64_t p)
-{
-    // (-p/2, p/2) 범위를 출력하도록 변경
+    /**
+     * @brief Distribute process: sender <-> receiver
+     * @brief Steps:
+     * 1. Sender -> Receiver ciphertext transmission
+     * 2. Sender and Receiver ciphertext-plaintext multiplication
+     * 3. Receiver computes integer psi value (-b^2 + R) mod t
+     * 4. Sender computes psi range (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
+     * @param encoder CoeffEncoder
+     * @param decryptor Decryptor
+     * @param evaluator Evaluator
+     * @param sender_ciphertext Ciphertext from sender
+     * @return void
+     */
+    void distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
+
+    /** 
+    * @brief Perform fuzzy one-to-one matching
+    * @brief Steps:
+    * 1. distribute process
+    * 2. check if receiver_value in sender_range
+    * 2-1 case 1 : check start > end (because of modulus!) (not implemented yet)
+    * 2-2 case 2 : normal case
+    * @brief If match, return receiver_value; else return vector, which elements are max int64_t
+
+    * @param encoder CoeffEncoder
+    * @param decryptor Decryptor
+    * @param evaluator Evaluator
+    * @param sender_ciphertext Ciphertext from sender
+    * @return if match, return receiver_value; else return vector, which elements are max int64_t
+    */
+    vector<int64_t> fuzzy_fast_one_to_one_matching(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
     
-    return (rand_u64() % p) - (p / 2);
-}
+    // destructor
+    ~FuzzyPSI();
 
-inline int64_t centered_modulus(int64_t value, int64_t modulus) {
-    int64_t mod_value = value % modulus;
-    if (mod_value > modulus / 2) {
-        mod_value -= modulus;
-    } else if (mod_value < -modulus / 2) {
-        mod_value += modulus;
-    }
-    return mod_value;
-}
-inline void centered_vector(const std::vector<uint64_t>& vec, int64_t modulus) {
-    if (vec.empty()) {
-        throw std::invalid_argument("Vector is empty");
-    }
-    for (const auto& val : vec) {
-        centered_modulus(val, modulus);
-    }
-}
-// 아래는 seal example 편의성 코드
 
-/*
-Helper function: Prints the name of the example in a fancy banner.
-*/
-inline void print_example_banner(std::string title)
-{
-    if (!title.empty())
-    {
-        std::size_t title_length = title.length();
-        std::size_t banner_length = title_length + 2 * 10;
-        std::string banner_top = "+" + std::string(banner_length - 2, '-') + "+";
-        std::string banner_middle = "|" + std::string(9, ' ') + title + std::string(9, ' ') + "|";
+private:
+    Sender sender_;
+    Receiver receiver_;
+    pair<int64_t, int64_t> sender_range_;
+    int64_t receiver_value_;
+    int64_t threshold_;
+    int64_t modulus_;
+    uint64_t data_size_;
+    vector<int64_t> MAX_VEC_;
+}; 
 
-        std::cout << std::endl << banner_top << std::endl << banner_middle << std::endl << banner_top << std::endl;
-    }
-}
 
-/*
-Helper function: Prints the parameters in a SEALContext.
-*/
-inline void print_parameters(const seal::SEALContext &context)
-{
-    auto &context_data = *context.key_context_data();
-
-    /*
-    Which scheme are we using?
-    */
-    std::string scheme_name;
-    switch (context_data.parms().scheme())
-    {
-    case seal::scheme_type::bfv:
-        scheme_name = "BFV";
-        break;
-    case seal::scheme_type::ckks:
-        scheme_name = "CKKS";
-        break;
-    case seal::scheme_type::bgv:
-        scheme_name = "BGV";
-        break;
-    default:
-        throw std::invalid_argument("unsupported scheme");
-    }
-    std::cout << "/" << std::endl;
-    std::cout << "| Encryption parameters :" << std::endl;
-    std::cout << "|   scheme: " << scheme_name << std::endl;
-    std::cout << "|   poly_modulus_degree: " << context_data.parms().poly_modulus_degree() << std::endl;
-
-    /*
-    Print the size of the true (product) coefficient modulus.
-    */
-    std::cout << "|   coeff_modulus size: ";
-    std::cout << context_data.total_coeff_modulus_bit_count() << " (";
-    auto coeff_modulus = context_data.parms().coeff_modulus();
-    std::size_t coeff_modulus_size = coeff_modulus.size();
-    for (std::size_t i = 0; i < coeff_modulus_size - 1; i++)
-    {
-        std::cout << coeff_modulus[i].bit_count() << " + ";
-    }
-    std::cout << coeff_modulus.back().bit_count();
-    std::cout << ") bits" << std::endl;
-
-    /*
-    For the BFV scheme print the plain_modulus parameter.
-    */
-    if (context_data.parms().scheme() == seal::scheme_type::bfv || context_data.parms().scheme() == seal::scheme_type::bgv)
-    {
-        std::cout << "|   plain_modulus: " << context_data.parms().plain_modulus().value() << std::endl;
-    }
-
-    std::cout << "\\" << std::endl;
-}
-
-/*
-Helper function: Prints the `parms_id' to std::ostream.
-*/
-inline std::ostream &operator<<(std::ostream &stream, seal::parms_id_type parms_id)
-{
-    /*
-    Save the formatting information for std::cout.
-    */
-    std::ios old_fmt(nullptr);
-    old_fmt.copyfmt(std::cout);
-
-    stream << std::hex << std::setfill('0') << std::setw(16) << parms_id[0] << " " << std::setw(16) << parms_id[1]
-           << " " << std::setw(16) << parms_id[2] << " " << std::setw(16) << parms_id[3] << " ";
-
-    /*
-    Restore the old std::cout formatting.
-    */
-    std::cout.copyfmt(old_fmt);
-
-    return stream;
-}
-
-/*
-Helper function: Prints a vector of floating-point values.
-*/
-template <typename T>
-inline void print_vector(std::vector<T> vec, std::size_t print_size = 4, int prec = 3)
-{
-    /*
-    Save the formatting information for std::cout.
-    */
-    std::ios old_fmt(nullptr);
-    old_fmt.copyfmt(std::cout);
-
-    std::size_t slot_count = vec.size();
-
-    std::cout << std::fixed << std::setprecision(prec);
-    std::cout << std::endl;
-    if (slot_count <= 2 * print_size)
-    {
-        std::cout << "    [";
-        for (std::size_t i = 0; i < slot_count; i++)
-        {
-            std::cout << " " << vec[i] << ((i != slot_count - 1) ? "," : " ]\n");
-        }
-    }
-    else
-    {
-        vec.resize(std::max(vec.size(), 2 * print_size));
-        std::cout << "    [";
-        for (std::size_t i = 0; i < print_size; i++)
-        {
-            std::cout << " " << vec[i] << ",";
-        }
-        if (vec.size() > 2 * print_size)
-        {
-            std::cout << " ...,";
-        }
-        for (std::size_t i = slot_count - print_size; i < slot_count; i++)
-        {
-            std::cout << " " << vec[i] << ((i != slot_count - 1) ? "," : " ]\n");
-        }
-    }
-    std::cout << std::endl;
-
-    /*
-    Restore the old std::cout formatting.
-    */
-    std::cout.copyfmt(old_fmt);
-}
-
-/*
-Helper function: Prints a matrix of values.
-*/
-template <typename T>
-inline void print_matrix(std::vector<T> matrix, std::size_t row_size)
-{
-    /*
-    We're not going to print every column of the matrix (there are 2048). Instead
-    print this many slots from beginning and end of the matrix.
-    */
-    std::size_t print_size = 5;
-
-    std::cout << std::endl;
-    std::cout << "    [";
-    for (std::size_t i = 0; i < print_size; i++)
-    {
-        std::cout << std::setw(3) << std::right << matrix[i] << ",";
-    }
-    std::cout << std::setw(3) << " ...,";
-    for (std::size_t i = row_size - print_size; i < row_size; i++)
-    {
-        std::cout << std::setw(3) << matrix[i] << ((i != row_size - 1) ? "," : " ]\n");
-    }
-    std::cout << "    [";
-    for (std::size_t i = row_size; i < row_size + print_size; i++)
-    {
-        std::cout << std::setw(3) << matrix[i] << ",";
-    }
-    std::cout << std::setw(3) << " ...,";
-    for (std::size_t i = 2 * row_size - print_size; i < 2 * row_size; i++)
-    {
-        std::cout << std::setw(3) << matrix[i] << ((i != 2 * row_size - 1) ? "," : " ]\n");
-    }
-    std::cout << std::endl;
-}
-
-/*
-Helper function: Print line number.
-*/
-inline void print_line(int line_number)
-{
-    std::cout << "Line " << std::setw(3) << line_number << " --> ";
-}
-
-/*
-Helper function: Convert a value into a hexadecimal string, e.g., uint64_t(17) --> "11".
-*/
-inline std::string uint64_to_hex_string(std::uint64_t value)
-{
-    return seal::util::uint_to_hex_string(&value, std::size_t(1));
-}
-
-inline void print_noise_budget(seal::Decryptor &decryptor, seal::Ciphertext &ciphertext, std::string name)
-{
-    std::cout << "    + noise budget in " << name << ": " << decryptor.invariant_noise_budget(ciphertext) << " bits"
-         << std::endl;
-}
+#endif
