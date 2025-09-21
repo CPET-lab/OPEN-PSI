@@ -28,14 +28,24 @@ public:
     }
    
     /**
-     * @brief Get data at index
-     * @param index index of data
-     * @return data at index
+     * @brief Get data
+     * @return vector<int64_t>
      */
-    inline int64_t get_data(uint64_t &index) const {
-        return data_[index];
+    inline vector<int64_t> get_data() const {
+        return data_;
     }
-   
+
+    /**
+     * @brief Print data (for DEBUG)
+     */
+    inline void print_data() const {
+        for (size_t i = 0; i < 10; i++) {
+            cout << data_[i] << " ";
+        }
+        cout << "... ";
+        cout << endl;
+    }
+
     /**
      * @brief Encode data to plaintext
      * @param encoder CoeffEncoder

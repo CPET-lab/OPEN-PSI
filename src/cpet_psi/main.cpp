@@ -42,7 +42,7 @@ int main(){
     Decryptor decryptor(context, secret_key);
     Evaluator evaluator(context);
 
-    int64_t threshold = 200;
+    int64_t threshold = 182;
     cout << "Threshold: " << threshold << endl;
 
     vector<int64_t> sender_vector;
@@ -56,23 +56,18 @@ int main(){
 
     Sender sender(sender_vector, context_param.plain_modulus().value(), encoder, encryptor);
 
+     // for DEBUG
     cout << "Sender vector: " << endl;
+    sender.print_data();
     
-    for (size_t i = 0; i < 10; i++) {
-        cout << sender.get_data(i) << " ";
-    }
-    cout << endl;
-
     // #2. Sender vector encoding
     // ex) a1 + a2·x + a3·x^2 + a4·x^3 + a5·x^4 ...
-    // sender vector = { a11, a12, a13, a14, a15.. };
 
-    
+    // for DEBUG
     Ciphertext sender_ciphertext = sender.get_ciphertext();
     print_noise_budget(decryptor, sender_ciphertext, "sender_ciphertext");
 
-    //#4. Receiver vector 생성 후, 순서 반전
-    // 마찬가지로 receiver vector 생성
+    // create receiver vector
     vector<int64_t> receiver_vector;
     for (size_t i = 0; i < set_vector_size; i++) {
         int64_t random_value = 0;
@@ -80,13 +75,14 @@ int main(){
         receiver_vector.push_back(random_value);
     }
 
+    // for DEBUG
     cout << "Receiver vector: " << endl;
-
     Receiver receiver(receiver_vector, context_param.plain_modulus().value(), encoder);
-    for (size_t i = 0; i < 10; i++) {
-        cout << receiver.get_data(i) << " ";
-    }
+    receiver.print_data();
     cout << endl;
+
+    // psi 객체 생성
+    FuzzyPSI fpsi(sender, receiver, threshold, context_param.plain_modulus().value(), context_param.poly_modulus_degree());
 
     // 여기서부터 시간 측정
     // 시간 측정 변수 선언
@@ -94,22 +90,14 @@ int main(){
     chrono::duration<double> elapsed_time;
     start_time = chrono::high_resolution_clock::now();
 
-    // #6. Sender -> Receiver 암호문 전송
-    // #7. sender 와 receiver 의 암호문 - 평문 곱셈
-    Ciphertext multiplied_ciphertext;
-    receiver.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext, multiplied_ciphertext);
-    print_noise_budget(decryptor, multiplied_ciphertext, "multiplied_ciphertext(before relin)");
-    
-    int64_t receiver_distance = receiver.get_psi_value();
+    // fpsi.print_info();
+    vector<int64_t> result = fpsi.fuzzy_fast_one_to_one_matching(encoder, decryptor, evaluator, sender_ciphertext);
 
-    // (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
-    pair<int64_t, int64_t> sender_range = sender.get_psi_range(decryptor, encoder, multiplied_ciphertext, threshold);
-
-    // psi 객체 생성
-    FuzzyPSI fpsi(sender_range, receiver_distance, threshold, context_param.plain_modulus().value());
-
-    fpsi.print_info();
-    fpsi.fuzzy_fast_one_to_one_matching();
+    cout << "| IF match, return receiver value; else return max int64_t vector |" << endl;
+    for (size_t i = 0; i < 10; i++) {
+        cout << result[i] << " ";
+    }
+    cout << "..." << endl;
 
     // 시간 측정 종료 및 결과 출력
     end_time = chrono::high_resolution_clock::now();

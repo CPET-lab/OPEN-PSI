@@ -245,6 +245,8 @@ CMakeFiles/test_file.dir/fpsi.cpp.o
  /home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.cpp
  /home/mintim01/OPEN-PSI/src/cpet_psi/DASetAug.h
  /home/mintim01/OPEN-PSI/src/cpet_psi/fpsi.h
+ /home/mintim01/OPEN-PSI/src/cpet_psi/receiver.h
+ /home/mintim01/OPEN-PSI/src/cpet_psi/sender.h
  /home/mintim01/OPEN-PSI/src/cpet_psi/util.h
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/native/src/seal/util/config.h
  /home/mintim01/OPEN-PSI/src/externals/MS-SEAL/build/thirdparty/msgsl-src/include/gsl/assert
