@@ -91,7 +91,7 @@ int main(){
     start_time = chrono::high_resolution_clock::now();
 
     // fpsi.print_info();
-    vector<int64_t> result = fpsi.fuzzy_fast_one_to_one_matching(encoder, decryptor, evaluator, sender_ciphertext);
+    vector<int64_t> result = fpsi.fuzzy_fast_one_to_one_matching(encoder, decryptor, context, evaluator, sender_ciphertext);
 
     cout << "| IF match, return receiver value; else return max int64_t vector |" << endl;
     for (size_t i = 0; i < 10; i++) {

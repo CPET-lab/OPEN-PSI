@@ -38,6 +38,50 @@ Receiver::Receiver(const std::vector<int64_t>& data, int64_t modulus, seal::Coef
     encoder.encode(random_vector_, random_plaintext_);
 }
 
+void Receiver::noise_flooding(const seal::Ciphertext& ciphertext, const seal::SEALContext& context, const seal::Evaluator& evaluator, seal::Ciphertext& destination)
+{
+   // Extract encryption parameters.
+    auto context_data_ptr = context.get_context_data(ciphertext.parms_id());
+    const auto& coeff_modulus = context_data_ptr->parms().coeff_modulus();
+    size_t coeff_modulus_size = coeff_modulus.size();
+   uint64_t plain_modulus = context_data_ptr->parms().plain_modulus().value();
+    uint64_t noise_bound = 1ULL << 40;
+
+    // Copy
+    seal::Ciphertext encrypted_copy = ciphertext;
+
+    if (encrypted_copy.is_ntt_form())
+    {
+        evaluator.transform_from_ntt_inplace(encrypted_copy);
+    }
+
+    seal::Ciphertext::ct_coeff_type* ptr = encrypted_copy.data();
+
+   // Add big noise to c_0.
+   // c_0 += t * E, where E is sampled from uniform distribution [0, 2^40].
+    random_device rd;
+    mt19937_64 gen(rd());
+    uniform_int_distribution<uint64_t> dist(0, noise_bound);
+    uint64_t E = dist(gen);
+
+    for (size_t j = 0; j < coeff_modulus_size; j++)
+    {
+        auto modulus = coeff_modulus[j];
+        auto poly_modulus_degree = encrypted_copy.poly_modulus_degree();
+        for (; poly_modulus_degree--; ptr++)
+        {
+            uint64_t noise = seal::util::multiply_uint_mod(plain_modulus, E, modulus);
+         *ptr = seal::util::add_uint_mod(*ptr, noise, modulus);
+        }
+    }
+
+    if (!encrypted_copy.is_ntt_form())
+    {
+        evaluator.transform_to_ntt_inplace(encrypted_copy);
+    }
+
+    destination = encrypted_copy;
+}
 
 Receiver::~Receiver() {
 }

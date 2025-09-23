@@ -66,17 +66,28 @@ public:
 
     /**
      * @brief Multiply plaintext with ciphertext and add random vector
+     * @param context SEALContext
      * @param evaluator Evaluator
      * @param sender_ciphertext Ciphertext from sender
      * @param destination Result ciphertext
      */
-    inline void multiply_plain_with_ciphertext_and_add_random_vector(seal::Evaluator &evaluator, const seal::Ciphertext &sender_ciphertext, seal::Ciphertext &destination) {
+    inline void multiply_plain_with_ciphertext_and_add_random_vector(seal::SEALContext &context, seal::Evaluator &evaluator, const seal::Ciphertext &sender_ciphertext, seal::Ciphertext &destination) {
         evaluator.multiply_plain(sender_ciphertext, plaintext_, destination);
         evaluator.add_plain_inplace(destination, random_plaintext_);
 
         // [TODO] : noise flooding 추가 해야함
+        noise_flooding(destination, context, evaluator, destination);
     }
-
+    
+    /**
+     * @brief Add noise flooding to the ciphertext
+     * @param ciphertext Ciphertext to add noise flooding
+     * @param context SEALContext
+     * @param evaluator Evaluator
+     * @param destination Result ciphertext with noise flooding
+     */
+    void noise_flooding(const seal::Ciphertext& ciphertext, const seal::SEALContext& context, const seal::Evaluator& evaluator, seal::Ciphertext& destination);
+    
     // destructor
     ~Receiver();
 
