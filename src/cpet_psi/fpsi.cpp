@@ -1,5 +1,5 @@
 /**
- * @file receiver.cpp
+ * @file fpsi.cpp
  * @author mingi kim
  * @brief source file implementing member functions of the FuzzyPSI class
  */
@@ -18,7 +18,7 @@ FuzzyPSI::FuzzyPSI(Sender & sender, Receiver & receiver, int64_t threshold, int6
     MAX_VEC_ = vector<int64_t>(data_size_, std::numeric_limits<int64_t>::max());
 }
 
-void FuzzyPSI::distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext) {
+void FuzzyPSI::distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::SEALContext & context, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext) {
     // steps:
     // 1. Sender -> Receiver ciphertext transmission
     // 2. Sender and Receiver ciphertext-plaintext multiplication
@@ -26,7 +26,7 @@ void FuzzyPSI::distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryp
     // 4. Sender computes psi range (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
 
     seal::Ciphertext multiplied_ciphertext;
-    receiver_.multiply_plain_with_ciphertext_and_add_random_vector(evaluator, sender_ciphertext, multiplied_ciphertext);
+    receiver_.multiply_plain_with_ciphertext_and_add_random_vector(context, evaluator, sender_ciphertext, multiplied_ciphertext);
 
     // for DEBUG
     // print_noise_budget(decryptor, multiplied_ciphertext, "multiplied_ciphertext");
@@ -35,9 +35,9 @@ void FuzzyPSI::distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryp
     // (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
     sender_range_ = sender_.get_psi_range(decryptor, encoder, multiplied_ciphertext, threshold_);
 }
-vector<int64_t> FuzzyPSI::fuzzy_fast_one_to_one_matching(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext) {
+vector<int64_t> FuzzyPSI::fuzzy_fast_one_to_one_matching(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::SEALContext & context, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext) {
 
-    distribute(encoder, decryptor, evaluator, sender_ciphertext);
+    distribute(encoder, decryptor, context, evaluator, sender_ciphertext);
 
     int64_t sender_start = sender_range_.first;
     int64_t sender_end = sender_range_.second;

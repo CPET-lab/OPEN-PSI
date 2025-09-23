@@ -39,11 +39,12 @@ public:
      * 4. Sender computes psi range (a^2 - 2ab + R - d^2, a^2 -2ab + R + 1)
      * @param encoder CoeffEncoder
      * @param decryptor Decryptor
+     * @param context SEALContext
      * @param evaluator Evaluator
      * @param sender_ciphertext Ciphertext from sender
      * @return void
      */
-    void distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
+    void distribute(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::SEALContext & context, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
 
     /** 
     * @brief Perform fuzzy one-to-one matching
@@ -56,11 +57,12 @@ public:
 
     * @param encoder CoeffEncoder
     * @param decryptor Decryptor
+    * @param context SEALContext
     * @param evaluator Evaluator
     * @param sender_ciphertext Ciphertext from sender
     * @return if match, return receiver_value; else return vector, which elements are max int64_t
     */
-    vector<int64_t> fuzzy_fast_one_to_one_matching(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
+    vector<int64_t> fuzzy_fast_one_to_one_matching(seal::CoeffEncoder & encoder, seal::Decryptor & decryptor, seal::SEALContext & context, seal::Evaluator & evaluator, seal::Ciphertext & sender_ciphertext);
     
     // destructor
     ~FuzzyPSI();
